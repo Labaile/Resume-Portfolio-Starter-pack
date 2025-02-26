@@ -15,7 +15,7 @@
       "zip": "W3B D3V"
     },
     "website": "https://www.papareact.com/course",
-    "resumedownload": "http://papareact.com",
+    "resumedownload": "https://drive.google.com/file/d/122DJku5kf4wmPj7gh9VZ1HflXfNpgKKi/view?usp=sharing",
     "social": [
       {
         "name": "youtube",
@@ -24,22 +24,22 @@
       },
       {
         "name": "facebook",
-        "url": "https://www.facebook.com/sonny.sangha.3",
+        "url": "https://www.facebook.com/latoya.bailey.9",
         "className": "fa fa-facebook"
       },
       {
         "name": "linkedin",
-        "url": "https://www.linkedin.com/in/saajansangha",
+        "url": "https://www.linkedin.com/in/labaile",
         "className": "fa fa-linkedin"
       },
       {
         "name": "instagram",
-        "url": "https://www.instagram.com/ssssangha/",
+        "url": "https://www.instagram.com/labaile/",
         "className": "fa fa-instagram"
       },
       {
         "name": "github",
-        "url": "https://github.com/PapaReact",
+        "url": "https://github.com/labaile",
         "className": "fa fa-github"
       }
     ]
@@ -48,10 +48,10 @@
     "skillmessage": "My Programming Language Proficiency",
     "education": [
       {
-        "school": "University of Kent - UK",
-        "degree": "Bachelor's Degree, Computer Science",
-        "graduated": "July 2016",
-        "description": "Graduated with First Class Honours"
+        "school": "University of Illinois - Chicago",
+        "degree": "Bachelor's Degree, Electrical Engineering",
+        "graduated": "July 2009"
+      
       }
     ],
     "work": [
