@@ -23,11 +23,6 @@
         "className": "fa fa-twitter"
       },
       {
-        "name": "facebook",
-        "url": "https://www.facebook.com/latoya.bailey.9",
-        "className": "fa fa-facebook"
-      },
-      {
         "name": "linkedin",
         "url": "https://www.linkedin.com/in/labaile",
         "className": "fa fa-linkedin"
