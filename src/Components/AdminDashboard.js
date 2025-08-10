@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 const AdminDashboard = () => {
   const [contacts, setContacts] = useState([]);
@@ -11,12 +11,7 @@ const AdminDashboard = () => {
 
   const ADMIN_KEY = 'admin123'; // In production, use proper authentication
 
-  useEffect(() => {
-    fetchContacts();
-    fetchStats();
-  }, [currentPage, selectedStatus, searchTerm]);
-
-  const fetchContacts = async () => {
+  const fetchContacts = useCallback(async () => {
     try {
       const params = new URLSearchParams({
         page: currentPage,
@@ -41,9 +36,9 @@ const AdminDashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, selectedStatus, searchTerm, ADMIN_KEY]);
 
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     try {
       const response = await fetch('http://localhost:5000/api/admin/contacts/stats', {
         headers: {
@@ -58,7 +53,12 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error('Error fetching stats:', error);
     }
-  };
+  }, [ADMIN_KEY]);
+
+  useEffect(() => {
+    fetchContacts();
+    fetchStats();
+  }, [fetchContacts, fetchStats]);
 
   const updateStatus = async (id, newStatus) => {
     try {
@@ -74,7 +74,7 @@ const AdminDashboard = () => {
       if (response.ok) {
         // Update local state
         setContacts(prev => prev.map(contact => 
-          contact._id === id ? { ...contact, status: newStatus } : contact
+          contact.id === id ? { ...contact, status: newStatus } : contact
         ));
         fetchStats(); // Refresh stats
       }
@@ -97,7 +97,7 @@ const AdminDashboard = () => {
       });
 
       if (response.ok) {
-        setContacts(prev => prev.filter(contact => contact._id !== id));
+        setContacts(prev => prev.filter(contact => contact.id !== id));
         fetchStats(); // Refresh stats
       }
     } catch (error) {
@@ -185,7 +185,7 @@ const AdminDashboard = () => {
           </thead>
           <tbody>
             {contacts.map(contact => (
-              <tr key={contact._id}>
+                              <tr key={contact.id}>
                 <td>{new Date(contact.createdAt).toLocaleDateString()}</td>
                 <td>{contact.name}</td>
                 <td>{contact.email}</td>
@@ -193,7 +193,7 @@ const AdminDashboard = () => {
                 <td>
                   <select
                     value={contact.status}
-                    onChange={(e) => updateStatus(contact._id, e.target.value)}
+                    onChange={(e) => updateStatus(contact.id, e.target.value)}
                     style={{ color: getStatusColor(contact.status) }}
                   >
                     <option value="new">New</option>
@@ -204,7 +204,7 @@ const AdminDashboard = () => {
                 </td>
                 <td>
                   <button 
-                    onClick={() => deleteContact(contact._id)}
+                    onClick={() => deleteContact(contact.id)}
                     className="delete-btn"
                   >
                     Delete
