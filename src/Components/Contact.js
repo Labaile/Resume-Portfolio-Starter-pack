@@ -1,10 +1,15 @@
 import React, { useState } from "react";
 
 const Contact = ({ data }) => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [subject, setSubject] = useState("");
-  const [message, setMessage] = useState("");
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: ""
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null); // 'success', 'error', null
+  const [submitMessage, setSubmitMessage] = useState("");
 
   if (data) {
     var contactName = data.name;
@@ -17,14 +22,64 @@ const Contact = ({ data }) => {
     var contactMessage = data.contactmessage;
   }
 
-  const submitForm = () => {
-    window.open(
-      `mailto:${contactEmail}?subject=${encodeURIComponent(
-        subject
-      )}&body=${encodeURIComponent(name)} (${encodeURIComponent(
-        email
-      )}): ${encodeURIComponent(message)}`
-    );
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus(null);
+    setSubmitMessage("");
+
+    try {
+      const response = await fetch('http://localhost:5000/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setSubmitStatus('success');
+        setSubmitMessage(result.message || 'Thank you for your message! We will get back to you soon.');
+        // Reset form
+        setFormData({
+          name: "",
+          email: "",
+          subject: "",
+          message: ""
+        });
+      } else {
+        setSubmitStatus('error');
+        if (result.errors && result.errors.length > 0) {
+          setSubmitMessage(result.errors.map(err => err.msg).join(', '));
+        } else {
+          setSubmitMessage(result.message || 'Something went wrong. Please try again.');
+        }
+      }
+    } catch (error) {
+      console.error('Submission error:', error);
+      setSubmitStatus('error');
+      setSubmitMessage('Network error. Please check your connection and try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const isFormValid = () => {
+    return formData.name.trim() && 
+           formData.email.trim() && 
+           formData.message.trim() &&
+           formData.name.trim().length >= 2 &&
+           formData.message.trim().length >= 10;
   };
 
   return (
@@ -43,78 +98,94 @@ const Contact = ({ data }) => {
 
       <div className="row">
         <div className="eight columns">
-          <form onSubmit={submitForm}>
+          <form onSubmit={handleSubmit}>
             <fieldset>
               <div>
-                <label htmlFor="contactName">
+                <label htmlFor="name">
                   Name <span className="required">*</span>
                 </label>
                 <input
                   type="text"
-                  defaultValue=""
-                  value={name}
+                  value={formData.name}
                   size="35"
-                  id="contactName"
-                  name="contactName"
-                  onChange={(e) => setName(e.target.value)}
+                  id="name"
+                  name="name"
+                  onChange={handleInputChange}
+                  required
+                  minLength="2"
+                  maxLength="100"
                 />
               </div>
 
               <div>
-                <label htmlFor="contactEmail">
+                <label htmlFor="email">
                   Email <span className="required">*</span>
                 </label>
                 <input
-                  type="text"
-                  defaultValue=""
-                  value={email}
+                  type="email"
+                  value={formData.email}
                   size="35"
-                  id="contactEmail"
-                  name="contactEmail"
-                  onChange={(e) => setEmail(e.target.value)}
+                  id="email"
+                  name="email"
+                  onChange={handleInputChange}
+                  required
                 />
               </div>
 
               <div>
-                <label htmlFor="contactSubject">Subject</label>
+                <label htmlFor="subject">Subject</label>
                 <input
                   type="text"
-                  defaultValue=""
-                  value={subject}
+                  value={formData.subject}
                   size="35"
-                  id="contactSubject"
-                  name="contactSubject"
-                  onChange={(e) => setSubject(e.target.value)}
+                  id="subject"
+                  name="subject"
+                  onChange={handleInputChange}
+                  maxLength="200"
                 />
               </div>
 
               <div>
-                <label htmlFor="contactMessage">
+                <label htmlFor="message">
                   Message <span className="required">*</span>
                 </label>
                 <textarea
                   cols="50"
                   rows="15"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  id="contactMessage"
-                  name="contactMessage"
+                  value={formData.message}
+                  onChange={handleInputChange}
+                  id="message"
+                  name="message"
+                  required
+                  minLength="10"
+                  maxLength="2000"
                 ></textarea>
               </div>
 
               <div>
-                <button onClick={submitForm} type="submit" className="submit">
-                  Submit
+                <button 
+                  type="submit" 
+                  className="submit"
+                  disabled={isSubmitting || !isFormValid()}
+                >
+                  {isSubmitting ? 'Sending...' : 'Submit'}
                 </button>
               </div>
             </fieldset>
           </form>
 
-          <div id="message-warning"> Error boy</div>
-          <div id="message-success">
-            <i className="fa fa-check"></i>Your message was sent, thank you!
-            <br />
-          </div>
+          {/* Status Messages */}
+          {submitStatus === 'error' && (
+            <div id="message-warning" style={{ color: '#ff6b6b', marginTop: '20px' }}>
+              <i className="fa fa-exclamation-triangle"></i> {submitMessage}
+            </div>
+          )}
+          
+          {submitStatus === 'success' && (
+            <div id="message-success" style={{ color: '#51cf66', marginTop: '20px' }}>
+              <i className="fa fa-check"></i> {submitMessage}
+            </div>
+          )}
         </div>
 
         <aside className="four columns footer-widgets">

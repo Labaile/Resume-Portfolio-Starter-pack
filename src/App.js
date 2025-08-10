@@ -7,6 +7,7 @@ import Resume from "./Components/Resume";
 import Contact from "./Components/Contact";
 import Testimonials from "./Components/Testimonials";
 import Portfolio from "./Components/Portfolio";
+import AdminDashboard from "./Components/AdminDashboard";
 
 import "./App.css";
 
@@ -30,6 +31,11 @@ const App = () => {
       <Testimonials data={resumeData.testimonials} />
       <Contact data={resumeData.main} />
       <Footer data={resumeData.main} />
+      
+      {/* Admin Dashboard - Comment out in production */}
+      {process.env.NODE_ENV === 'development' && (
+        <AdminDashboard />
+      )}
     </div>
   );
 };
