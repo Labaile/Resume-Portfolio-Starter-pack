@@ -1,16 +1,33 @@
 const { Sequelize } = require('sequelize');
-const path = require('path');
 
-const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: path.join(__dirname, '../database.sqlite'),
-  logging: process.env.NODE_ENV === 'development' ? console.log : false
-});
+const sequelize = new Sequelize(
+  process.env.DB_NAME || 'neondb',
+  process.env.DB_USER || 'neondb_owner',
+  process.env.DB_PASSWORD || 'npg_jlSWNsQ3i5HX',
+  {
+    host: process.env.DB_HOST || 'ep-ancient-meadow-a56tof3y-pooler.us-east-2.aws.neon.tech',
+    port: process.env.DB_PORT || 5432,
+    dialect: 'postgres',
+    logging: process.env.NODE_ENV === 'development' ? console.log : false,
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    },
+    pool: {
+      max: 5,
+      min: 0,
+      acquire: 30000,
+      idle: 10000
+    }
+  }
+);
 
 const connectDB = async () => {
   try {
     await sequelize.authenticate();
-    console.log('SQLite Database Connected Successfully');
+    console.log('Neon PostgreSQL Connected Successfully');
     
     // Sync all models (create tables if they don't exist)
     await sequelize.sync({ alter: true });

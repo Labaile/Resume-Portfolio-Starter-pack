@@ -8,7 +8,7 @@ const Contact = sequelize.define('Contact', {
     autoIncrement: true
   },
   name: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(100),
     allowNull: false,
     validate: {
       notEmpty: { msg: 'Name is required' },
@@ -24,7 +24,7 @@ const Contact = sequelize.define('Contact', {
     }
   },
   subject: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(200),
     allowNull: true,
     validate: {
       len: { args: [0, 200], msg: 'Subject cannot exceed 200 characters' }
@@ -39,14 +39,11 @@ const Contact = sequelize.define('Contact', {
     }
   },
   status: {
-    type: DataTypes.STRING,
-    defaultValue: 'new',
-    validate: {
-      isIn: { args: [['new', 'read', 'replied', 'archived']], msg: 'Invalid status' }
-    }
+    type: DataTypes.ENUM('new', 'read', 'replied', 'archived'),
+    defaultValue: 'new'
   },
   ipAddress: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(45), // IPv6 compatible
     allowNull: true
   },
   userAgent: {
@@ -55,7 +52,18 @@ const Contact = sequelize.define('Contact', {
   }
 }, {
   tableName: 'contacts',
-  timestamps: true
+  timestamps: true,
+  indexes: [
+    {
+      fields: ['email']
+    },
+    {
+      fields: ['status']
+    },
+    {
+      fields: ['createdAt']
+    }
+  ]
 });
 
 module.exports = Contact;
