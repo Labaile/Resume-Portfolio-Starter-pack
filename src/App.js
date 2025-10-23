@@ -8,6 +8,7 @@ import Contact from "./Components/Contact";
 import Testimonials from "./Components/Testimonials";
 import Portfolio from "./Components/Portfolio";
 import AdminDashboard from "./Components/AdminDashboard";
+import { SpeedInsights } from "@vercel/speed-insights/react"
 
 import "./App.css";
 
@@ -24,6 +25,7 @@ const App = () => {
 
   return (
     <div className="App">
+        <SpeedInsights />
       <Header data={resumeData.main} />
       <About data={resumeData.main} />
       <Resume data={resumeData.resume} />
